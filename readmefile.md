@@ -3,13 +3,13 @@
 -->vagrantfile:
 ```
 Vagrant.configure("2") do |config|
-  config.vm.box = "generic/ubuntu2204"
-  config.vm.network "forwarded_port", guest: 80, host: 8080
-
-  config.vm.provision "ansible" do |ansible|
-    ansible.playbook = "ansible-playbook.yml"
+    config.vm.box = "generic/ubuntu2204"
+    config.vm.network "forwarded_port", guest: 80, host: 8080
+  
+    config.vm.provision "ansible" do |ansible|
+      ansible.playbook = "ansible-playbook.yml"
+    end
   end
-end
 ```
 
 -->ansible-playbook.yml
@@ -83,8 +83,8 @@ CMD ["java", "-jar", "/app.jar"]
 ```
 --> build and push image :
 ```
-docker build -t arijchetoui1/devoirautomatisation:latest .
-docker push arijchetoui1/devoirautomatisation:latest:latest
+docker build -t arijchetoui1/devoirautomatisation .
+docker push arijchetoui1/devoirautomatisation
 
 ```
 
@@ -92,19 +92,32 @@ docker push arijchetoui1/devoirautomatisation:latest:latest
 
 --->main.tf:
 ```
-provider "docker" {
-  host = "tcp://192.168.121.213:2375"
+terraform {
+  required_providers {
+    docker = {
+      source  = "kreuzwerker/docker"
+      version = "~> 3.0.0"
+    }
+  }
 }
 
-resource "docker_container" "salutation" {
-  name  = "salutation"
-  image = "arijchetoui1/testautomatisation:latest"
+provider "docker" {host = "tcp://192.168.121.138:2375"}
 
+resource "docker_image" "testautomatisation" {
+  name         = "arijchetoui1/testautomatisation"
+  keep_locally = false
+}
+
+resource "docker_container" "testautomatisation" {
+  image = docker_image.testautomatisation.name
+  name  = "testautomatisation"
   ports {
     internal = 8888
     external = 9999
   }
+  restart = "unless-stopped"  # Politique de redémarrage
 }
+
 ```
 # A partir de votre machine physique, testez l’accès à votre conteneur salutation
 ![Alt text](image-1.png)
@@ -112,3 +125,14 @@ resource "docker_container" "salutation" {
 # Monitorer le système linux de votre VM-LAB avec le dashboard grafana (id = 1860)
 ![Alt text](image-2.png)
 ![Alt text](image-3.png)
+
+
+# Portainer
+![Alt text](image-4.png)
+
+
+# node node-exporter 
+![Alt text](image-5.png)
+
+# alertmanager
+![Alt text](image-6.png)
