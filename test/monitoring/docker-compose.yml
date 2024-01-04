@@ -1,0 +1,47 @@
+version: '3.8'
+
+# Définition des volumes Docker pour persister les données
+volumes:
+  prometheus-data:
+    driver: local
+  grafana-data:
+    driver: local
+  alert-manager-data:
+    driver: local
+
+# Définition des services Docker
+services:
+  # Configuration du service Prometheus
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    ports:
+      - 9090:9090
+    volumes:
+      - prometheus-data:/prometheus  # Montage du volume pour persister les données Prometheus
+      - ./prometheus:/etc/prometheus  # Montage du volume pour la configuration Prometheus
+    command: --config.file=/etc/prometheus/prometheus.yml --log.level=debug  # Commande pour spécifier le fichier de configuration
+    restart: unless-stopped
+
+  # Configuration du service Grafana
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - 3000:3000
+    volumes:
+      - grafana-data:/var/lib/grafana  # Montage du volume pour persister les données Grafana
+      - ./grafana/provisioning/datasources:/etc/grafana/provisioning/datasources       # Montage du volume pour la configuration Grafana
+    restart: unless-stopped
+
+  # Configuration du service Alertmanager
+  alertmanager:
+    image: prom/alertmanager:latest
+    container_name: alertmanager
+    ports:
+      - "9093:9093"
+    volumes:
+      - alert-manager-data:/data  # Montage du volume pour persister les données Alertmanager
+      - ./alert-manager/config:/etc/alertmanager  # Montage du volume pour la configuration Alertmanager
+    command: --config.file=/etc/alertmanager/alertmanager.yml --log.level=debug  # Commande pour spécifier le fichier de configuration
+    restart: unless-stopped

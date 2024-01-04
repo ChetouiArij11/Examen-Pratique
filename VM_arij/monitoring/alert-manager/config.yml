@@ -1,0 +1,13 @@
+global:
+  resolve_timeout: 5m
+
+route:
+  group_by: ['alertname', 'instance']
+
+  receiver: 'email'
+
+receivers:
+- name: 'email'
+  email_configs:
+  - to: 'arijchetoui1@gmail.com'
+    send_resolved: true

@@ -1,0 +1,22 @@
+global:
+  resolve_timeout: 1m
+
+route:
+  receiver: lab-slack
+  repeat_interval: 1m
+
+receivers:
+  - name: 'lab-slack'
+    slack_configs:
+      - send_resolved: true
+        username: 'Alertmanager'
+        channel: '#monitoring-infrastructure'
+        api_url: 'https://hooks.slack.com/services/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'
+    email_configs:
+      - to: 'arijchetoui1@gmail.com'
+        from: 'arijchetoui1@gmail.com'
+        smarthost: 'smtp.gmail.com:587'
+        auth_username: 'arijchetoui1@gmail.com'
+        auth_identity: 'arijchetoui1@gmail.com'
+        auth_password: 'pava eufo jmmc movk'
+        send_resolved: true

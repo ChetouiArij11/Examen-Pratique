@@ -1,0 +1,11 @@
+groups:
+  - name: example
+    rules:
+      - alert: HighAPICalls
+        expr: (my_custom_counter_total) * 60 > 10
+        for: 1m
+        labels:
+          severity: "critical"
+        annotations:
+          summary: "High API call rate detected"
+          description: "The API call rate has exceeded 10 per minute."
